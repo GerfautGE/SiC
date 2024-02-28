@@ -13,7 +13,6 @@ FIND_PACKAGE(BISON)
 
 # Source files
 set(SILICIUM_SOURCES
-    AstNode.cpp
     tokens.l
     parser.y
     main.cpp
