@@ -9,17 +9,19 @@
     int yyerror(char const *msg);
     #define YYERROR_VERBOSE
     #define YYDEBUG 1
+    #define RED(x) "\033[31m" x "\033[0m"
 %}
 
 %union {
     int ival;
     char *str;
+    int token;
 }
 
 /* define tokens. MUST be the same than in tokens.l */ 
 %token <str> T_ID
 %token <ival> T_INT
-%token T_FN T_ARROW T_LPAREN T_RPAREN T_LBRACE T_RBRACE
+%token <token> T_FN T_ARROW T_LPAREN T_RPAREN T_LBRACE T_RBRACE
 
 /* define the type of the YYSTYPE */
 %type <str> identifier
@@ -34,7 +36,7 @@
 
 %%
 program: statement_list
-    | %empty
+    | %empty 
     ;
 
 statement_list: statement
