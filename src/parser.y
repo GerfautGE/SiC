@@ -3,6 +3,7 @@
 
 %{
     #include <iostream>
+    #include "AstNode.hpp"
 
     extern int yylex();
     int yyerror(char const *msg);
