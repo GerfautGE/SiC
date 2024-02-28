@@ -15,7 +15,7 @@
         } else {
             fprintf(stderr, "line %d %s : %s\n", yylineno, RED("Error"), msg);
         }
-        return 1;
+        exit(1);
     }
 %}
 
