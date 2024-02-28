@@ -1,5 +1,6 @@
 %{
     #include<stdio.h>
+    #include"AstNode.hpp"
     #include "parser.hpp"
 
     #define RED(x) "\033[0;31m" x "\033[0m"

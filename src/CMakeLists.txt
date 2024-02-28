@@ -17,10 +17,12 @@ set(SILICIUM_SOURCES
     tokens.l
     parser.y
     main.cpp
+    FunctionDeclaration.cpp
 )
 
 set(SILICIUM_HEADERS
     AstNode.hpp
+    FunctionDeclaration.hpp
 )
 
 # Set the version number

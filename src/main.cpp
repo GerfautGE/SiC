@@ -1,8 +1,13 @@
 //extern int yyparse();
 #include <iostream>
+#include "AstNode.hpp"
+
+#define RED(x) "\033[1;31m" x "\033[0m"
 
 extern FILE *yyin;
 extern int yyparse();
+
+extern Block *programBlock;
 
 char *filename;
 
@@ -30,6 +35,21 @@ int main(int argc, char**argv) {
     filename = argv[1]; 
     // parse the input file
     yyparse();
-    
-    return 0;
+
+    // check if the AST was built successfully
+    if (programBlock != nullptr) {
+        std::cout << "AST built successfully" << std::endl;
+    }
+    else {
+        std::cerr << RED("Error") << ": could not build AST" << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // free the memory used by the AST and close files
+    delete programBlock;
+    if (yyin != NULL) {
+        fclose(yyin);
+    }
+
+    return EXIT_SUCCESS;
 }
