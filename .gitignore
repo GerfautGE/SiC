@@ -6,3 +6,6 @@ build
 *.output
 sic
 .vscode
+.clangd
+*.o
+*.s
