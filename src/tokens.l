@@ -31,5 +31,5 @@
 [[:alpha:]_][[:alnum:]_]* {yylval.str = strdup(yytext); return T_ID;}
 
 [ \t\n] { /* ignore whitespace */ }
-
+. { exit(1); }
 %%
