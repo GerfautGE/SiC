@@ -27,7 +27,7 @@
     int token;
 }
 
-/* define tokens. MUST be the same than in tokens.l */ 
+/* define tokens. MUST be the same than in tokens.l */
 %token <str> T_ID
 %token <ival> T_INT
 %token T_FN T_LPAREN T_RPAREN T_ARROW T_LBRACE T_RBRACE

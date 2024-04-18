@@ -37,7 +37,6 @@ int main(int argc, char**argv) {
 
     // check if the AST was built successfully
     if (programBlock != nullptr) {
-        std::cout << "AST built successfully" << std::endl;
     }
     else {
         std::cerr << RED("Error") << ": could not build AST" << std::endl;
