@@ -2,15 +2,13 @@
 #include <iostream>
 #include "AstNode.hpp"
 #include "ErrorCode.h"
-
-#define RED(x) "\033[1;31m" x "\033[0m"
+#include "Globals.hpp"
 
 extern FILE *yyin;
 extern int yyparse();
 
 extern Block *programBlock;
 
-char *filename;
 
 /**
  * Print usage message and exit

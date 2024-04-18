@@ -34,12 +34,14 @@ set(SILICIUM_SOURCES
     parser.y
     main.cpp
     FunctionDeclaration.cpp
+    Globals.cpp
 )
 
 set(SILICIUM_HEADERS
     AstNode.hpp
     FunctionDeclaration.hpp
     ErrorCode.h
+    Globals.hpp
 )
 
 # Set the version number

@@ -5,12 +5,13 @@
     #include <iostream>
     #include "AstNode.hpp"
     #include "FunctionDeclaration.hpp"
+    #include "Globals.hpp"
 
     extern int yylex();
     int yyerror(char const *msg);
     #define YYERROR_VERBOSE
     #define YYDEBUG 1
-    #define RED(x) "\033[31m" x "\033[0m"
+
 
     Block *programBlock; /* the top level root node of our final AST */
 %}

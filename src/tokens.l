@@ -3,8 +3,7 @@
     #include"AstNode.hpp"
     #include "parser.hpp"
     #include "ErrorCode.h"
-
-    #define RED(x) "\033[0;31m" x "\033[0m"
+    #include "Globals.hpp"
 
     extern "C" int yywrap() { return 1; }
 
