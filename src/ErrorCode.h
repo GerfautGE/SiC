@@ -7,4 +7,5 @@ enum ERROR_CODE {
     LEX_ERROR,
     SYNTAX_ERROR,
     AST_BUILD_ERROR,
+    NO_MAIN_ERROR,
 };
