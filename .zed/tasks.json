@@ -25,7 +25,7 @@
   },
   {
     "label": "Test",
-    "command": "make test",
+    "command": "cmake -B build -S src && make -C build test",
     //"args": [],
     "env": {},
     //"cwd": "/path/to/working/directory",
