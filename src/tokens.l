@@ -2,6 +2,7 @@
     #include<stdio.h>
     #include"AstNode.hpp"
     #include "parser.hpp"
+    #include "ErrorCode.h"
 
     #define RED(x) "\033[0;31m" x "\033[0m"
 
@@ -16,7 +17,7 @@
         } else {
             fprintf(stderr, "line %d %s : %s\n", yylineno, RED("Error"), msg);
         }
-        exit(1);
+        exit(ERROR_CODE::SYNTAX_ERROR);
     }
 %}
 
@@ -31,5 +32,5 @@
 [[:alpha:]_][[:alnum:]_]* {yylval.str = strdup(yytext); return T_ID;}
 
 [ \t\n] { /* ignore whitespace */ }
-. { exit(1); }
+. { exit(ERROR_CODE::LEX_ERROR); }
 %%

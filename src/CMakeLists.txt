@@ -39,6 +39,7 @@ set(SILICIUM_SOURCES
 set(SILICIUM_HEADERS
     AstNode.hpp
     FunctionDeclaration.hpp
+    ErrorCode.h
 )
 
 # Set the version number
@@ -56,6 +57,10 @@ FLEX_TARGET(Scanner tokens.l ${CMAKE_CURRENT_BINARY_DIR}/tokens.cpp)
 # Build the Compiler
 add_executable(sic ${SILICIUM_SOURCES} ${SILICIUM_HEADERS} ${BISON_Parser_OUTPUTS} ${FLEX_Scanner_OUTPUTS})
 
-add_test(NAME test_silicium COMMAND sic ../test/grammar.si)
 add_test(NAME lexer_error COMMAND sic ../test/lex_error.si)
 set_property(TEST lexer_error PROPERTY WILL_FAIL TRUE)
+
+add_test(NAME parser_error COMMAND sic ../test/parse_error.si)
+set_property(TEST parser_error PROPERTY WILL_FAIL TRUE)
+
+add_test(NAME basic_grammar COMMAND sic ../test/grammar.si)

@@ -1,6 +1,7 @@
 //extern int yyparse();
 #include <iostream>
 #include "AstNode.hpp"
+#include "ErrorCode.h"
 
 #define RED(x) "\033[1;31m" x "\033[0m"
 
@@ -17,7 +18,7 @@ char *filename;
 */
 const static void usage(std::string name) {
     std::cerr << "Usage: " << name << " <input file>" << std::endl;
-    exit(EXIT_FAILURE);
+    exit(ERROR_CODE::USAGE_ERROR);
 }
 
 int main(int argc, char**argv) {
@@ -29,10 +30,10 @@ int main(int argc, char**argv) {
     // check if file opened successfully
     if (yyin == NULL) {
         std::cerr << "Error: could not open file " << argv[1] << std::endl;
-        exit(EXIT_FAILURE);
+        exit(ERROR_CODE::FILE_ERROR);
     }
     // set the filename for error messages
-    filename = argv[1]; 
+    filename = argv[1];
     // parse the input file
     yyparse();
 
@@ -42,7 +43,7 @@ int main(int argc, char**argv) {
     }
     else {
         std::cerr << RED("Error") << ": could not build AST" << std::endl;
-        exit(EXIT_FAILURE);
+        exit(ERROR_CODE::AST_BUILD_ERROR);
     }
 
     // free the memory used by the AST and close files
@@ -51,5 +52,5 @@ int main(int argc, char**argv) {
         fclose(yyin);
     }
 
-    return EXIT_SUCCESS;
+    return ERROR_CODE::NO_ERROR;
 }
