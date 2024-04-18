@@ -9,3 +9,4 @@ sic
 .clangd
 *.o
 *.s
+docs/

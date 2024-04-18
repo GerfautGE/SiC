@@ -4,13 +4,13 @@
 [
   {
     "label": "Build",
-    "command": "cmake -B build -S src && make -C build",
+    "command": "make -C build",
     //"args": [],
     // Env overrides for the command, will be appended to the terminal's environment from the settings.
     "env": {
       "CXX": "clang++",
       "CC": "clang",
-      "CXXFLAGS": "-I/opt/homebrew/opt/llvm@14/include"
+      "CXXFLAGS": "-I/opt/homebrew/opt/llvm/include"
     },
     // Current working directory to spawn the command into, defaults to current project root.
     //"cwd": "/path/to/working/directory",
@@ -25,10 +25,9 @@
   },
   {
     "label": "Test",
-    "command": "cmake -B build -S src && make -C build test",
+    "command": "make -C build test",
     //"args": [],
     "env": {},
-    //"cwd": "/path/to/working/directory",
     "use_new_terminal": false,
     "allow_concurrent_runs": false,
     "reveal": "always"
