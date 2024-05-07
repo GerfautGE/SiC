@@ -8,4 +8,5 @@ enum ERROR_CODE {
     SYNTAX_ERROR,
     AST_BUILD_ERROR,
     NO_MAIN_ERROR,
+    OTHER_ERROR
 };

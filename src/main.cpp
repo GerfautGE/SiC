@@ -1,13 +1,13 @@
 //extern int yyparse();
 #include <iostream>
-#include "AstNode.hpp"
 #include "ErrorCode.h"
 #include "Globals.hpp"
+#include "CodeGen.hpp"
+#include "EmitObject.hpp"
 
 extern FILE *yyin;
 extern int yyparse();
 
-extern Block *programBlock;
 
 
 /**
@@ -30,13 +30,21 @@ int main(int argc, char**argv) {
         std::cerr << "Error: could not open file " << argv[1] << std::endl;
         exit(ERROR_CODE::FILE_ERROR);
     }
+
+    // setup code generation environment before parsing
+    setupCodeGen();
+
     // set the filename for error messages
     filename = argv[1];
     // parse the input file
     yyparse();
 
     // check if the AST was built successfully
-    if (programBlock != nullptr) {
+    if (rootAST != nullptr) {
+        setupCodeGen();
+        codeGen();
+        set_entryPoint();
+        emitObject();
     }
     else {
         std::cerr << RED("Error") << ": could not build AST" << std::endl;
@@ -44,7 +52,7 @@ int main(int argc, char**argv) {
     }
 
     // free the memory used by the AST and close files
-    delete programBlock;
+    delete rootAST;
     if (yyin != NULL) {
         fclose(yyin);
     }

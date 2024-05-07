@@ -6,14 +6,13 @@
     #include "AstNode.hpp"
     #include "FunctionDeclaration.hpp"
     #include "Globals.hpp"
+    extern Block *rootAST;
 
     extern int yylex();
     int yyerror(char const *msg);
     #define YYERROR_VERBOSE
     #define YYDEBUG 1
 
-
-    Block *programBlock; /* the top level root node of our final AST */
 %}
 
 %union {
@@ -47,8 +46,8 @@
 %header
 
 %%
-program: statement_list { programBlock = $1; }
-    | %empty  { programBlock = new Block(); }
+program: statement_list { rootAST = $1; }
+    | %empty  { rootAST = new Block(); }
     ;
 
 statement_list: statement {$$ = new Block(); $$->statements.push_back($<statement>1);}
