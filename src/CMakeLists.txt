@@ -78,3 +78,5 @@ set_property(TEST no_main_assembly_error PROPERTY WILL_FAIL TRUE)
 add_test(NAME no_main_object COMMAND sic -c ../test/no_main.si)
 
 add_test(NAME change_output_name COMMAND sic -o test_out_name ../test/grammar.si && test -f test_out_name)
+
+add_test(NAME funcall COMMAND sic ../test/call.si)
