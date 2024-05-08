@@ -71,3 +71,10 @@ add_test(NAME parser_error COMMAND sic ../test/parse_error.si)
 set_property(TEST parser_error PROPERTY WILL_FAIL TRUE)
 
 add_test(NAME basic_grammar COMMAND sic ../test/grammar.si)
+
+add_test(NAME no_main_assembly_error COMMAND sic -s ../test/no_main.si)
+set_property(TEST no_main_assembly_error PROPERTY WILL_FAIL TRUE)
+
+add_test(NAME no_main_object COMMAND sic -c ../test/no_main.si)
+
+add_test(NAME change_output_name COMMAND sic -o test_out_name ../test/grammar.si && test -f test_out_name)
