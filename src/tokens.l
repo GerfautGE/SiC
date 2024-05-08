@@ -7,11 +7,11 @@
 
     extern "C" int yywrap() { return 1; }
 
-    int lex_error(const char *msg) {
+    int lex_error(const char *msg, char * text) {
         if(filename) {
-            fprintf(stderr, "%s:%d %s : %s\n", filename, yylineno, RED("Error") , msg);
+            fprintf(stderr, "%s:%d %s : %s %s\n", filename, yylineno, RED("Error") , msg, text);
         } else {
-            fprintf(stderr, "line %d %s : %s\n", yylineno, RED("Error"), msg);
+            fprintf(stderr, "line %d %s : %s %s\n", yylineno, RED("Error"), msg, text);
         }
         exit(ERROR_CODE::LEX_ERROR);
     }
@@ -28,15 +28,18 @@
 %}
 
 %%
+"var" { return T_VAR; }
 "fn" { return T_FN; }
 "->" { return T_ARROW; }
 "(" { return T_LPAREN; }
 ")" { return T_RPAREN; }
 "{" { return T_LBRACE; }
 "}" { return T_RBRACE; }
+"=" { return T_EQUAL; }
+";" { return T_SEMICOLON; }
 [0-9]+ {yylval.ival = atoi(yytext); return T_INT;}
 [[:alpha:]_][[:alnum:]_]* {yylval.str = strdup(yytext); return T_ID;}
 
 [ \t\n] { /* ignore whitespace */ }
-. { lex_error("unexpected character"); }
+. { lex_error("unexpected character", strdup(yytext)); }
 %%

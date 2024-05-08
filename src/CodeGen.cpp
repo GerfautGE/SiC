@@ -1,6 +1,7 @@
 #include "CodeGen.hpp"
 #include "ErrorCode.h"
 #include "Globals.hpp"
+#include "llvm/IR/Instructions.h"
 #include <iostream>
 
 void setupCodeGen() {
@@ -23,6 +24,8 @@ void setupCodeGen() {
         std::cerr << "Error: Could not create IR builder." << std::endl;
         exit(ERROR_CODE::OTHER_ERROR);
     }
+    // Create the NamedValues map.
+    NamedValues = new std::map<std::string, llvm::AllocaInst *>();
 }
 
 void set_entryPoint(){
@@ -51,17 +54,11 @@ void set_entryPoint(){
 }
 
 void codeGen(){
-    // Stub for now
-    // Create a main function that returns 69
-    auto mainFunc = llvm::Function::Create(
-        llvm::FunctionType::get(llvm::Type::getInt32Ty(*TheContext), false),
-        llvm::Function::ExternalLinkage,
-        "main",
-        TheModule
-    );
+    // assert rootAST is not null
+    if (!rootAST) {
+        std::cerr << "Error: Root AST node is null." << std::endl;
+        exit(ERROR_CODE::EMPTY_AST_ERROR);
+    }
 
-    auto entryBlock = llvm::BasicBlock::Create(*TheContext, "entry", mainFunc);
-    Builder->SetInsertPoint(entryBlock);
-
-    Builder->CreateRet(llvm::ConstantInt::get(llvm::Type::getInt32Ty(*TheContext), 69));
+    rootAST->codeGen();
 }

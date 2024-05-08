@@ -41,11 +41,12 @@ set(SILICIUM_HEADERS
     Globals.hpp
     CodeGen.hpp
     EmitObject.hpp
+    Options.hpp
 )
 
 # Set the version number
-set(VER_MAJ 0)
-set(VER_MIN 1)
+set(VER_MAJ 1)
+set(VER_MIN 0)
 set(VER_PATCH 0)
 
 # copy some headers to the build directory

@@ -1,3 +1,4 @@
-fn main() -> {
-    42
+fn test() -> {
+    var x = 42;
+    x
 }

@@ -1,20 +1,25 @@
 #include "FunctionDeclaration.hpp"
+#include "AstNode.hpp"
 #include "Globals.hpp"
+#include "llvm/IR/Value.h"
 
-FunctionDeclaration::FunctionDeclaration(Identifier *name, Block*body) : id(name), body(body) {
+FunctionDeclaration::FunctionDeclaration(Identifier *name, InstrList *body) : id(name), body(body) {
 }
 
-void FunctionDeclaration::codeGen(){
+llvm::Value* FunctionDeclaration::codeGen(){
     auto func = llvm::Function::Create(
         llvm::FunctionType::get(llvm::Type::getVoidTy(*TheContext), false),
-        llvm::Function::ExternalLinkage,
+        llvm::Function::CommonLinkage,
         id->to_string(),
         TheModule
     );
-    auto entryBlock = llvm::BasicBlock::Create(*TheContext, id->to_string(), func);
-    Builder->SetInsertPoint(entryBlock);
+    auto insertBlock = llvm::BasicBlock::Create(*TheContext, id->to_string(), func);
+    Builder->SetInsertPoint(insertBlock);
 
-    // Ret Value to 69 for debugging
-    auto retValue = llvm::ConstantInt::get(*TheContext, llvm::APInt(32, 69));
-    Builder->CreateRet(retValue);
+    // Generate code for the body
+    for (auto instr : *body){
+        instr->codeGen();
+    }
+
+    return nullptr;
 }

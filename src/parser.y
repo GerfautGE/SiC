@@ -6,7 +6,6 @@
     #include "AstNode.hpp"
     #include "FunctionDeclaration.hpp"
     #include "Globals.hpp"
-    extern Block *rootAST;
 
     extern int yylex();
     int yyerror(char const *msg);
@@ -16,11 +15,18 @@
 %}
 
 %union {
-    Node *node;
-    Block *block;
+    Program *rootAST;
+
+    Statement *stmt;
+    StatementList *stmts;
+
+    Instr *instr;
+    InstrList *instrs;
     Expression *expr;
-    Statement *statement;
+
     Identifier *identifier;
+    Integer *integer;
+
     int ival;
     char *str;
     int token;
@@ -29,14 +35,19 @@
 /* define tokens. MUST be the same than in tokens.l */
 %token <str> T_ID
 %token <ival> T_INT
-%token T_FN T_LPAREN T_RPAREN T_ARROW T_LBRACE T_RBRACE
+%token T_FN T_LPAREN T_RPAREN T_ARROW T_LBRACE T_RBRACE T_VAR T_EQUAL T_SEMICOLON
 
 /* define the type of the non-terminal */
-%type <block> program statement_list block
-%type <statement> statement function_declaration
-%type <expr> expr integer
-%type <identifier> identifier
+%type <stmt> statement function_declaration
+%type <stmts> statements program
 
+%type <expr> expression literal
+
+%type <instr> instr return_instr decl_instr
+%type <instrs> instrs
+
+%type <identifier> identifier
+%type <integer> integer
 
 %start program
 %debug
@@ -46,27 +57,41 @@
 %header
 
 %%
-program: statement_list { rootAST = $1; }
-    | %empty  { rootAST = new Block(); }
+program: statements {rootAST = new Program($1);}
     ;
 
-statement_list: statement {$$ = new Block(); $$->statements.push_back($<statement>1);}
-    | statement_list statement { $1->statements.push_back($<statement>2);}
+statements: statement {$$ = new StatementList(); $$->push_back($1);}
+    | statements statement {$$ = $1; $1->push_back($2);}
     ;
 
-statement: function_declaration
+statement: function_declaration {$$ = $1;}
     ;
 
-function_declaration: T_FN identifier T_LPAREN T_RPAREN T_ARROW T_LBRACE block T_RBRACE { $$ = new FunctionDeclaration($2, $7); }
+function_declaration: T_FN identifier T_LPAREN T_RPAREN T_ARROW  T_LBRACE instrs T_RBRACE
+    {
+        $$ = new FunctionDeclaration($2, $7);
+    }
     ;
 
-block: return
+instrs: instr {$$ = new InstrList(); $$->push_back($1);}
+    | instrs instr {$$ = $1; $1->push_back($2);}
     ;
 
-return: expr
+instr: return_instr {$$ = $1;}
+    | decl_instr T_SEMICOLON {$$ = $1;}
     ;
 
-expr: integer
+return_instr: expression {$$ = new Return_Instr($1);}
+    ;
+
+decl_instr: T_VAR identifier T_EQUAL literal {$$ = new Decl_Instr($2, $4);}
+    ;
+
+literal: integer {$$ = $1;}
+    ;
+
+expression: literal {$$ = $1;}
+    | identifier {$$ = $1;}
     ;
 
 integer: T_INT {$$ = new Integer($1);}
