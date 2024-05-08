@@ -9,8 +9,10 @@ FunctionDeclaration::FunctionDeclaration(Identifier *name, InstrList *body) : id
 
 llvm::Value* FunctionDeclaration::codeGen(){
     std::cout << "Generating code for function declaration " << id->to_string() << std::endl;
+
+
     TheFunction = llvm::Function::Create(
-        llvm::FunctionType::get(llvm::Type::getVoidTy(*TheContext), false),
+        llvm::FunctionType::get(llvm::Type::getInt32Ty(*TheContext),  false),
         llvm::Function::CommonLinkage,
         id->to_string(),
         TheModule

@@ -100,6 +100,7 @@ expression: literal {$$ = $1;}
     ;
 
 call: identifier T_LPAREN T_RPAREN {$$ = new Call_Expr($1);}
+    ;
 
 integer: T_INT {$$ = new Integer($1);}
     ;

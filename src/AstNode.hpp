@@ -162,17 +162,12 @@ class Call_Expr : public Expression {
     public:
         Call_Expr(Identifier *name) : name(name) {};
         Identifier* name;
-        std::vector<Expression *> *args;
-        llvm::Value * codeGen() override{
-            std::cout << "Call_Expr(" << name->to_string() << ") codeGen" << std::endl;
-            llvm::Function * callee = TheModule->getFunction(name->to_string());
-            if (!callee) {
-                std::cerr << "Unknown function referenced" << std::endl;
-                exit(ERROR_CODE::UNKNOWN_FUNCTION_ERROR);
-            }
-            std::vector<llvm::Value *> args;
-            llvm::Value* ret = Builder->CreateCall(callee, args, "calltmp");
-            std::cout << "ret: " << ret << std::endl;
-            return ret;
+        llvm::Value *codeGen() override {
+          // Look up the name in the global module table.
+          llvm::Function *CalleeF = TheModule->getFunction(name->to_string());
+          if (!CalleeF){
+              std::cerr << "Unknown function referenced" << std::endl;
+          }
+          return Builder->CreateCall(CalleeF);
         }
 };
