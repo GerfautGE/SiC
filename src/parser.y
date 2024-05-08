@@ -36,12 +36,13 @@
 %token <str> T_ID
 %token <ival> T_INT
 %token T_FN T_LPAREN T_RPAREN T_ARROW T_LBRACE T_RBRACE T_VAR T_EQUAL T_SEMICOLON T_RET
+%token T_PLUS
 
 /* define the type of the non-terminal */
 %type <stmt> statement function_declaration
 %type <stmts> statements program
 
-%type <expr> expression literal call
+%type <expr> expression literal call add_expr
 
 %type <instr> instr return_instr decl_instr call_instr
 %type <instrs> instrs
@@ -97,9 +98,13 @@ literal: integer {$$ = $1;}
 expression: literal {$$ = $1;}
     | identifier {$$ = $1;}
     | call {$$ = $1;}
+    | add_expr {$$ = $1;}
     ;
 
 call: identifier T_LPAREN T_RPAREN {$$ = new Call_Expr($1);}
+    ;
+
+add_expr: expression T_PLUS expression {$$ = new Binop_Expr($1, $3, Binop::Plus);}
     ;
 
 integer: T_INT {$$ = new Integer($1);}

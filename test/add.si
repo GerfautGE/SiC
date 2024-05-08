@@ -1,0 +1,7 @@
+fn callee() -> {
+    2+3
+}
+
+fn main() -> {
+    ret 1+callee();
+}

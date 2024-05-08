@@ -90,7 +90,6 @@ class Identifier : public Expression {
         virtual ~Identifier() = default;
         std::string to_string() override { return name; };
         virtual llvm::Value *codeGen() override {
-            std::cout << "Identifier(" << name << ") codeGen" << std::endl;
             // lookup in NamedValues
             llvm::AllocaInst * a = NamedValues->at(name);
             if (!a) {
@@ -110,7 +109,6 @@ class Integer : public Expression {
         virtual ~Integer() = default;
         std::string to_string() override { return std::to_string(value); };
         llvm::Value * codeGen() override{
-            std::cout << "Integer(" << value << ") codeGen" << std::endl;
             return  llvm::ConstantInt::get(llvm::Type::getInt32Ty(*TheContext), value, true);
         }
 
@@ -123,7 +121,6 @@ class Return_Instr : public Instr {
         Return_Instr(Expression * return_value) : return_value(return_value) {};
         Expression * return_value;
         llvm::Value * codeGen() override{
-            std::cout << "Return codeGen" << std::endl;
             llvm::Value * ret = return_value->codeGen();
             Builder->CreateRet(ret);
             return ret;
@@ -166,8 +163,31 @@ class Call_Expr : public Expression {
           // Look up the name in the global module table.
           llvm::Function *CalleeF = TheModule->getFunction(name->to_string());
           if (!CalleeF){
-              std::cerr << "Unknown function referenced" << std::endl;
+              std::cerr << "Unknown function: " << name->to_string()  << std::endl;
+                exit(ERROR_CODE::UNKNOWN_FUNCTION_ERROR);
           }
           return Builder->CreateCall(CalleeF);
+        }
+};
+
+enum class Binop {
+    Plus,
+};
+
+class Binop_Expr : public Expression {
+    public:
+        Binop_Expr(Expression *lhs, Expression *rhs, Binop op) : lhs(lhs), rhs(rhs), op(op) {};
+        Expression *lhs;
+        Expression *rhs;
+        Binop op;
+
+        llvm::Value * codeGen() override {
+            llvm::Value * l = lhs->codeGen();
+            llvm::Value * r = rhs->codeGen();
+            switch (op) {
+                case Binop::Plus:
+                    return Builder->CreateAdd(l, r, "addtmp");
+            }
+            return nullptr;
         }
 };

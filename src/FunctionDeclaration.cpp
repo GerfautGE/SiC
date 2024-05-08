@@ -8,9 +8,6 @@ FunctionDeclaration::FunctionDeclaration(Identifier *name, InstrList *body) : id
 }
 
 llvm::Value* FunctionDeclaration::codeGen(){
-    std::cout << "Generating code for function declaration " << id->to_string() << std::endl;
-
-
     TheFunction = llvm::Function::Create(
         llvm::FunctionType::get(llvm::Type::getInt32Ty(*TheContext),  false),
         llvm::Function::CommonLinkage,
@@ -24,9 +21,7 @@ llvm::Value* FunctionDeclaration::codeGen(){
     NamedValues->clear();
 
     // Generate code for the body
-    int i = 0;
     for (auto instr : *body){
-        std::cout << "Generating code for instruction " << i++ << std::endl;
         instr->codeGen();
     }
 

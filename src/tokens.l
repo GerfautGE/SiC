@@ -39,6 +39,7 @@
 "}" { return T_RBRACE; }
 "=" { return T_EQUAL; }
 ";" { return T_SEMICOLON; }
+"+" { return T_PLUS; }
 [0-9]+ {yylval.ival = atoi(yytext); return T_INT;}
 [[:alpha:]_][[:alnum:]_]* {yylval.str = strdup(yytext); return T_ID;}
 
