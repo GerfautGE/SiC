@@ -1,0 +1,8 @@
+fn callee() -> {
+    ret 17;
+}
+
+fn main() -> {
+    var x = callee();
+    x
+}

@@ -35,15 +35,15 @@
 /* define tokens. MUST be the same than in tokens.l */
 %token <str> T_ID
 %token <ival> T_INT
-%token T_FN T_LPAREN T_RPAREN T_ARROW T_LBRACE T_RBRACE T_VAR T_EQUAL T_SEMICOLON
+%token T_FN T_LPAREN T_RPAREN T_ARROW T_LBRACE T_RBRACE T_VAR T_EQUAL T_SEMICOLON T_RET
 
 /* define the type of the non-terminal */
 %type <stmt> statement function_declaration
 %type <stmts> statements program
 
-%type <expr> expression literal
+%type <expr> expression literal call
 
-%type <instr> instr return_instr decl_instr
+%type <instr> instr return_instr decl_instr call_instr
 %type <instrs> instrs
 
 %type <identifier> identifier
@@ -53,7 +53,6 @@
 %debug
 %verbose
 %locations
-
 %header
 
 %%
@@ -79,12 +78,17 @@ instrs: instr {$$ = new InstrList(); $$->push_back($1);}
 
 instr: return_instr {$$ = $1;}
     | decl_instr T_SEMICOLON {$$ = $1;}
+    | call_instr T_SEMICOLON {$$ = $1;}
     ;
 
 return_instr: expression {$$ = new Return_Instr($1);}
+    | T_RET expression T_SEMICOLON {$$ = new Return_Instr($2);}
     ;
 
-decl_instr: T_VAR identifier T_EQUAL literal {$$ = new Decl_Instr($2, $4);}
+decl_instr: T_VAR identifier T_EQUAL expression {$$ = new Decl_Instr($2, $4);}
+    ;
+
+call_instr: identifier T_LPAREN T_RPAREN {$$ = new Call_Instr($1);}
     ;
 
 literal: integer {$$ = $1;}
@@ -92,7 +96,10 @@ literal: integer {$$ = $1;}
 
 expression: literal {$$ = $1;}
     | identifier {$$ = $1;}
+    | call {$$ = $1;}
     ;
+
+call: identifier T_LPAREN T_RPAREN {$$ = new Call_Expr($1);}
 
 integer: T_INT {$$ = new Integer($1);}
     ;

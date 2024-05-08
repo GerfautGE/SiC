@@ -41,11 +41,15 @@ int main(int argc, char**argv) {
     // check if the AST was built successfully
     if (rootAST != nullptr) {
         setupCodeGen();
+        std::cout << "Code generation setup successfully" << std::endl;
         codeGen();
+        std::cout << "Code generation completed successfully" << std::endl;
         if (opts.fileType != llvm::CodeGenFileType::ObjectFile){
             set_entryPoint();
+            std::cout << "Entry point set successfully" << std::endl;
         }
         emitObject(&opts);
+        std::cout << "Object file emitted successfully" << std::endl;
     }
     else {
         std::cerr << RED("Error") << ": could not build AST" << std::endl;

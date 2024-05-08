@@ -26,10 +26,12 @@
         exit(ERROR_CODE::SYNTAX_ERROR);
     }
 %}
+%option yylineno
 
 %%
 "var" { return T_VAR; }
 "fn" { return T_FN; }
+"ret" { return T_RET; }
 "->" { return T_ARROW; }
 "(" { return T_LPAREN; }
 ")" { return T_RPAREN; }

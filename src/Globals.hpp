@@ -15,4 +15,5 @@ extern Node *rootAST; /* root of AST */
 extern llvm::LLVMContext *TheContext;
 extern llvm::IRBuilder<> *Builder;
 extern llvm::Module *TheModule;
+extern llvm::Function *TheFunction;
 extern std::map<std::string, llvm::AllocaInst*> *NamedValues;

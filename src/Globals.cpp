@@ -15,4 +15,5 @@ Node *rootAST = nullptr;
 llvm::LLVMContext *TheContext = nullptr;
 llvm::IRBuilder<> *Builder = nullptr;
 llvm::Module *TheModule = nullptr;
+llvm::Function *TheFunction = nullptr;
 std::map<std::string, llvm::AllocaInst *> *NamedValues;
