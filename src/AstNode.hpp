@@ -90,6 +90,7 @@ class Identifier : public Expression {
         virtual ~Identifier() = default;
         std::string to_string() override { return name; };
         virtual llvm::Value *codeGen() override {
+            std::cout << "Identifier(" << name << ") codeGen" << std::endl;
             // lookup in NamedValues
             llvm::AllocaInst * a = NamedValues->at(name);
             if (!a) {
@@ -109,6 +110,7 @@ class Integer : public Expression {
         virtual ~Integer() = default;
         std::string to_string() override { return std::to_string(value); };
         llvm::Value * codeGen() override{
+            std::cout << "Integer(" << value << ") codeGen" << std::endl;
             return  llvm::ConstantInt::get(llvm::Type::getInt32Ty(*TheContext), value, true);
         }
 
@@ -121,6 +123,7 @@ class Return_Instr : public Instr {
         Return_Instr(Expression * return_value) : return_value(return_value) {};
         Expression * return_value;
         llvm::Value * codeGen() override{
+            std::cout << "Return codeGen" << std::endl;
             llvm::Value * ret = return_value->codeGen();
             Builder->CreateRet(ret);
             return ret;
@@ -137,5 +140,34 @@ class Decl_Instr : public Instr {
             Builder->CreateStore(value->codeGen(),a);
             NamedValues->insert(std::pair<std::string, llvm::AllocaInst *>(name->to_string(), a));
             return nullptr;
+        }
+};
+
+class Call_Instr : public Instr {
+    public:
+        Call_Instr(Identifier *name) : name(name) {};
+        Identifier* name;
+        std::vector<Expression *> *args;
+        llvm::Value * codeGen() override{
+            llvm::Function * callee = TheModule->getFunction(name->to_string());
+            if (!callee) {
+                std::cerr << "Unknown function referenced" << std::endl;
+                exit(ERROR_CODE::UNKNOWN_FUNCTION_ERROR);
+            }
+            return Builder->CreateCall(callee);
+        }
+};
+
+class Call_Expr : public Expression {
+    public:
+        Call_Expr(Identifier *name) : name(name) {};
+        Identifier* name;
+        llvm::Value *codeGen() override {
+          // Look up the name in the global module table.
+          llvm::Function *CalleeF = TheModule->getFunction(name->to_string());
+          if (!CalleeF){
+              std::cerr << "Unknown function referenced" << std::endl;
+          }
+          return Builder->CreateCall(CalleeF);
         }
 };
