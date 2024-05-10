@@ -44,6 +44,8 @@
 "*" { return T_MUL; }
 "/" { return T_DIV; }
 "%" { return T_MOD; }
+"<<" { return T_LSHIFT; }
+">>" { return T_RSHIFT; }
 [0-9]+ {yylval.ival = atoi(yytext); return T_INT;}
 [[:alpha:]_][[:alnum:]_]* {yylval.str = strdup(yytext); return T_ID;}
 

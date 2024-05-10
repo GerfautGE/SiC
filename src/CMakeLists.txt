@@ -82,3 +82,5 @@ add_test(NAME change_output_name COMMAND sic -o test_out_name ../test/grammar.si
 add_test(NAME funcall COMMAND sic ../test/call.si)
 
 add_test(NAME math_op COMMAND sic ../test/math_op.si)
+
+add_test(NAME logical_shift COMMAND sic ../test/logical_shift.si)

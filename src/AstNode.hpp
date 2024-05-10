@@ -179,6 +179,8 @@ enum class Binop {
   Times,
   Divide,
   Modulo,
+  Lsr,
+  Lsl,
 };
 
 class Binop_Expr : public Expression {
@@ -203,6 +205,10 @@ public:
       return Builder->CreateSDiv(l, r, "divtmp");
     case Binop::Modulo:
       return Builder->CreateSRem(l, r, "modtmp");
+    case Binop::Lsr:
+      return Builder->CreateLShr(l, r, "lsrtmp");
+    case Binop::Lsl:
+      return Builder->CreateShl(l, r, "lsrtmp");
     }
     return nullptr;
   }
