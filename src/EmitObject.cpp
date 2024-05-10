@@ -10,6 +10,7 @@
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/TargetParser/Host.h"
+#include <cstdlib>
 #include <iostream>
 
 void emitObject(comp_options *opts) {
@@ -72,4 +73,10 @@ void emitObject(comp_options *opts) {
   }
   pm.run(*TheModule);
   dest.flush();
+
+  // link the object file using ld
+  // TODO: make this cross platform by using llvm's lld
+  if (!system("ld -o a.out out.o")) {
+    system("rm out.o");
+  }
 }
