@@ -76,7 +76,8 @@ void emitObject(comp_options *opts) {
 
   // link the object file using ld
   // TODO: make this cross platform by using llvm's lld
-  if (!system("ld -o a.out out.o")) {
+  if (opts->fileType == llvm::CodeGenFileType::ObjectFile &&
+      !system("ld -o a.out out.o")) {
     system("rm out.o");
   }
 }
