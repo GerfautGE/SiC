@@ -4,5 +4,5 @@ fn callee() -> {
 
 fn main() -> {
     var x = callee();
-    x
+    ret x;
 }

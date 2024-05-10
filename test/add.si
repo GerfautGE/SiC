@@ -1,5 +1,5 @@
 fn callee() -> {
-    2+3
+    ret 2+3;
 }
 
 fn main() -> {

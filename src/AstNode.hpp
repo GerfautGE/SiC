@@ -175,6 +175,9 @@ public:
 
 enum class Binop {
   Plus,
+  Minus,
+  Times,
+  Divide,
 };
 
 class Binop_Expr : public Expression {
@@ -191,6 +194,12 @@ public:
     switch (op) {
     case Binop::Plus:
       return Builder->CreateAdd(l, r, "addtmp");
+    case Binop::Minus:
+      return Builder->CreateSub(l, r, "subtmp");
+    case Binop::Times:
+      return Builder->CreateMul(l, r, "multmp");
+    case Binop::Divide:
+      return Builder->CreateSDiv(l, r, "divtmp");
     }
     return nullptr;
   }
