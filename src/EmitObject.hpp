@@ -1,3 +1,3 @@
 #pragma once
 #include "Options.hpp"
-void emitObject(comp_options*);
+void emitObject(comp_options *);

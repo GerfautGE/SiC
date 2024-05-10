@@ -1,75 +1,75 @@
 #include "ErrorCode.h"
 #include "Globals.hpp"
 #include "Options.hpp"
+#include "llvm/IR/LegacyPassManager.h"
+#include "llvm/MC/TargetRegistry.h"
+#include "llvm/Support/CodeGen.h"
+#include "llvm/Support/FileSystem.h"
 #include "llvm/Support/TargetSelect.h"
+#include "llvm/Support/raw_ostream.h"
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/TargetParser/Host.h"
-#include "llvm/MC/TargetRegistry.h"
-#include "llvm/Support/FileSystem.h"
-#include "llvm/Support/raw_ostream.h"
-#include "llvm/IR/LegacyPassManager.h"
-#include "llvm/Support/CodeGen.h"
 #include <iostream>
 
+void emitObject(comp_options *opts) {
+  llvm::InitializeNativeTarget();
+  llvm::InitializeNativeTargetAsmPrinter();
+  llvm::InitializeNativeTargetAsmParser();
 
-void emitObject(comp_options* opts){
-    llvm::InitializeNativeTarget();
-    llvm::InitializeNativeTargetAsmPrinter();
-    llvm::InitializeNativeTargetAsmParser();
+  // target triple
+  auto TargetTriple = llvm::sys::getDefaultTargetTriple();
+  // initialize the target
 
-    // target triple
-    auto TargetTriple = llvm::sys::getDefaultTargetTriple();
-    //initialize the target
+  std::string Error;
+  auto Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
 
-    std::string Error;
-    auto Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
+  auto CPU = "generic";
+  auto Features = "";
 
-    auto CPU = "generic";
-    auto Features = "";
+  llvm::TargetOptions opt;
+  auto TargetMachine = Target->createTargetMachine(TargetTriple, CPU, Features,
+                                                   opt, llvm::Reloc::PIC_);
 
-    llvm::TargetOptions opt;
-    auto TargetMachine = Target->createTargetMachine(TargetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
+  std::error_code EC;
 
-    std::error_code EC;
+  std::string outName;
 
-    std::string outName;
-
-    if (opts->outName){
-        outName = opts->outName;
-    } else {
-        switch (opts->fileType) {
-            case llvm::CodeGenFileType::ObjectFile:
-                outName = "out.o";
-                break;
-            case llvm::CodeGenFileType::AssemblyFile:
-                outName = "out.s";
-                break;
-            default:
-                outName = "out.o";
-                break;
-        }
+  if (opts->outName) {
+    outName = opts->outName;
+  } else {
+    switch (opts->fileType) {
+    case llvm::CodeGenFileType::ObjectFile:
+      outName = "out.o";
+      break;
+    case llvm::CodeGenFileType::AssemblyFile:
+      outName = "out.s";
+      break;
+    default:
+      outName = "out.o";
+      break;
     }
-    llvm::raw_fd_ostream dest(outName, EC, llvm::sys::fs::OF_None);
+  }
+  llvm::raw_fd_ostream dest(outName, EC, llvm::sys::fs::OF_None);
 
-    if (EC) {
-      exit(1);
-    }
+  if (EC) {
+    exit(1);
+  }
 
-    llvm::legacy::PassManager pm;
+  llvm::legacy::PassManager pm;
 
-    // IMPORTANT! Set the machine to emit an assembly
-    if (TargetMachine->addPassesToEmitFile(pm, dest, nullptr, opts->fileType)) {
-        std::cerr << "TheTargetMachine can't emit a file of this type";
-        exit(ERROR_CODE::OTHER_ERROR);
-    }
+  // IMPORTANT! Set the machine to emit an assembly
+  if (TargetMachine->addPassesToEmitFile(pm, dest, nullptr, opts->fileType)) {
+    std::cerr << "TheTargetMachine can't emit a file of this type";
+    exit(ERROR_CODE::OTHER_ERROR);
+  }
 
-    TheModule->setDataLayout(TargetMachine->createDataLayout());
-    TheModule->setTargetTriple(TargetTriple);
+  TheModule->setDataLayout(TargetMachine->createDataLayout());
+  TheModule->setTargetTriple(TargetTriple);
 
-    if (!TheModule) {
-        exit(ERROR_CODE::OTHER_ERROR);
-    }
-    pm.run(*TheModule);
-    dest.flush();
+  if (!TheModule) {
+    exit(ERROR_CODE::OTHER_ERROR);
+  }
+  pm.run(*TheModule);
+  dest.flush();
 }

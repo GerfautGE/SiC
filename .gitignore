@@ -10,3 +10,4 @@ sic
 *.o
 *.s
 docs/
+a.out
