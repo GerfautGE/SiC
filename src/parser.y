@@ -36,7 +36,7 @@
 %token <str> T_ID
 %token <ival> T_INT
 %token T_FN T_LPAREN T_RPAREN T_ARROW T_LBRACE T_RBRACE T_VAR T_EQUAL T_SEMICOLON T_RET
-%token T_PLUS T_MINUS T_MUL T_DIV
+%token T_PLUS T_MINUS T_MUL T_DIV T_MOD
 
 /* define the type of the non-terminal */
 %type <stmt> statement function_declaration
@@ -51,6 +51,7 @@
 %type <integer> integer
 
 /* Binop Precedence */
+%left T_MOD
 %left T_PLUS T_MINUS
 %left T_MUL T_DIV
 
@@ -93,6 +94,7 @@ expression: integer {$$ = $1;}
     | expression T_MINUS expression {$$ = new Binop_Expr($1, $3, Binop::Minus);}
     | expression T_MUL expression {$$ = new Binop_Expr($1, $3, Binop::Times);}
     | expression T_DIV expression {$$ = new Binop_Expr($1, $3, Binop::Divide);}
+    | expression T_MOD expression {$$ = new Binop_Expr($1, $3, Binop::Modulo);}
     | T_LPAREN expression T_RPAREN {$$ = $2;}
     ;
 

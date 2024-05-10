@@ -178,6 +178,7 @@ enum class Binop {
   Minus,
   Times,
   Divide,
+  Modulo,
 };
 
 class Binop_Expr : public Expression {
@@ -200,6 +201,8 @@ public:
       return Builder->CreateMul(l, r, "multmp");
     case Binop::Divide:
       return Builder->CreateSDiv(l, r, "divtmp");
+    case Binop::Modulo:
+      return Builder->CreateSRem(l, r, "modtmp");
     }
     return nullptr;
   }
