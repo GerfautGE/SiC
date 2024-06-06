@@ -3,7 +3,7 @@
 # This script is used to generate a markdown file explaining error codes in the compiler.
 # It reads the error codes from the compiler source code and generates a markdown file
 
-src_filename="src/ErrorCode.h"
+src_filename="src/ErrorCode.hpp"
 output_filename="docs/error_codes.md"
 
 # read the enum values from the source file
