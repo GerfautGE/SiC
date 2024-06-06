@@ -32,12 +32,16 @@
 "var" { return T_VAR; }
 "fn" { return T_FN; }
 "ret" { return T_RET; }
+"if" { return T_IF; }
+"else" { return T_ELSE; }
 "->" { return T_ARROW; }
 "(" { return T_LPAREN; }
 ")" { return T_RPAREN; }
 "{" { return T_LBRACE; }
 "}" { return T_RBRACE; }
-"=" { return T_EQUAL; }
+"[" { return T_LBRACKET; }
+"]" { return T_RBRACKET; }
+"=" { return T_ASSIGN; }
 ";" { return T_SEMICOLON; }
 "+" { return T_PLUS; }
 "-" { return T_MINUS; }
@@ -46,6 +50,8 @@
 "%" { return T_MOD; }
 "<<" { return T_LSHIFT; }
 ">>" { return T_RSHIFT; }
+"==" { return T_EQ; }
+"!=" { return T_NEQ; }
 [0-9]+ {yylval.ival = atoi(yytext); return T_INT;}
 [[:alpha:]_][[:alnum:]_]* {yylval.str = strdup(yytext); return T_ID;}
 

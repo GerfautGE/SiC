@@ -1,0 +1,16 @@
+fn cond()-> {
+    ret 0;
+}
+
+fn return()->{
+    ret 12;
+}
+
+fn main() -> {
+    if[cond()==1]{
+        ret 10;
+    } else {
+        var tmp = return();
+    };
+    ret tmp;
+}

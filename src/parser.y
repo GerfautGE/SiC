@@ -35,8 +35,11 @@
 /* define tokens. MUST be the same than in tokens.l */
 %token <str> T_ID
 %token <ival> T_INT
-%token T_FN T_LPAREN T_RPAREN T_ARROW T_LBRACE T_RBRACE T_VAR T_EQUAL T_SEMICOLON T_RET
+%token T_FN T_VAR T_RET T_IF T_ELSE
+%token T_LPAREN T_RPAREN T_ARROW T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_ASSIGN T_SEMICOLON
+%token T_EQ T_NEQ
 %token T_PLUS T_MINUS T_MUL T_DIV T_MOD T_LSHIFT T_RSHIFT
+
 
 /* define the type of the non-terminal */
 %type <stmt> statement function_declaration
@@ -51,6 +54,7 @@
 %type <integer> integer
 
 /* Binop Precedence */
+%left T_EQ T_NEQ
 %left T_LSHIFT T_RSHIFT
 %left T_MOD
 %left T_PLUS T_MINUS
@@ -84,8 +88,9 @@ instrs: instr {$$ = new InstrList(); $$->push_back($1);}
     ;
 
 instr:T_RET expression T_SEMICOLON {$$ = new Return_Instr($2);}
-    | T_VAR identifier T_EQUAL expression T_SEMICOLON {$$ = new Decl_Instr($2, $4);}
+    | T_VAR identifier T_ASSIGN expression T_SEMICOLON {$$ = new Decl_Instr($2, $4);}
     | identifier T_LPAREN T_RPAREN T_SEMICOLON {$$ = new Call_Instr($1);}
+    | T_IF T_LBRACKET expression T_RBRACKET T_LBRACE instrs T_RBRACE T_ELSE T_LBRACE instrs T_RBRACE T_SEMICOLON {$$ = new If_Instr($3, $6, $10);}
     ;
 
 expression: integer {$$ = $1;}
@@ -98,6 +103,8 @@ expression: integer {$$ = $1;}
     | expression T_MOD expression {$$ = new Binop_Expr($1, $3, Binop::Modulo);}
     | expression T_LSHIFT expression {$$ = new Binop_Expr($1, $3, Binop::Lsl);}
     | expression T_RSHIFT expression {$$ = new Binop_Expr($1, $3, Binop::Lsr);}
+    | expression T_EQ expression {$$ = new Binop_Expr($1, $3, Binop::Equal);}
+    | expression T_NEQ expression {$$ = new Binop_Expr($1, $3, Binop::NotEqual);}
     | T_LPAREN expression T_RPAREN {$$ = $2;}
     ;
 

@@ -1,9 +1,10 @@
-// extern int yyparse();
+#include "AstNode.hpp"
 #include "CodeGen.hpp"
 #include "EmitObject.hpp"
 #include "ErrorCode.h"
 #include "Globals.hpp"
 #include "Options.hpp"
+#include "llvm/IR/Verifier.h"
 #include "llvm/Support/CodeGen.h"
 #include <iostream>
 
@@ -41,6 +42,8 @@ int main(int argc, char **argv) {
     if (opts.fileType != llvm::CodeGenFileType::ObjectFile) {
       set_entryPoint();
     }
+    // verify the module
+    llvm::verifyModule(*TheModule);
     emitObject(&opts);
   } else {
     std::cerr << RED("Error") << ": could not build AST" << std::endl;

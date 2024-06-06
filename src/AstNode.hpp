@@ -1,6 +1,9 @@
 #pragma once
 #include "ErrorCode.h"
+#include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Constants.h"
+#include "llvm/IR/DataLayout.h"
+#include "llvm/IR/Function.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Type.h"
@@ -16,9 +19,6 @@ extern llvm::LLVMContext *TheContext;
 extern llvm::IRBuilder<> *Builder;
 extern llvm::Module *TheModule;
 extern std::map<std::string, llvm::AllocaInst *> *NamedValues;
-
-using StatementList = std::vector<class Statement *>;
-using InstrList = std::vector<class Instr *>;
 
 /**
  * Base class for all nodes in the AST
@@ -70,6 +70,34 @@ public:
   }
 };
 
+class StatementList : public std::vector<Statement *> {
+public:
+  StatementList() = default;
+  virtual ~StatementList() = default;
+  std::string to_string() { return "StatementList"; };
+  llvm::Value *codeGen() {
+    llvm::Value *last = nullptr;
+    for (auto statement : *this) {
+      last = statement->codeGen();
+    }
+    return last;
+  }
+};
+
+class InstrList : public std::vector<Instr *> {
+public:
+  InstrList() = default;
+  virtual ~InstrList() = default;
+  std::string to_string() { return "InstrList"; };
+  llvm::Value *codeGen() {
+    llvm::Value *last = nullptr;
+    for (auto instr : *this) {
+      last = instr->codeGen();
+    }
+    return last;
+  }
+};
+
 class Program : public Node {
 public:
   Program(StatementList *statements) : statements(statements) {};
@@ -77,10 +105,11 @@ public:
   StatementList *statements;
   std::string to_string() override { return "Program"; };
   llvm::Value *codeGen() override {
+    llvm::Value *last = nullptr;
     for (auto statement : *statements) {
-      statement->codeGen();
+      last = statement->codeGen();
     }
-    return nullptr;
+    return last;
   }
 };
 
@@ -136,10 +165,11 @@ public:
   llvm::Value *codeGen() override {
     llvm::AllocaInst *a = Builder->CreateAlloca(
         llvm::Type::getInt32Ty(*TheContext), nullptr, name->to_string());
-    Builder->CreateStore(value->codeGen(), a);
+    llvm::Value *v = value->codeGen();
+    Builder->CreateStore(v, a);
     NamedValues->insert(
         std::pair<std::string, llvm::AllocaInst *>(name->to_string(), a));
-    return nullptr;
+    return v;
   }
 };
 
@@ -181,6 +211,8 @@ enum class Binop {
   Modulo,
   Lsr,
   Lsl,
+  Equal,
+  NotEqual,
 };
 
 class Binop_Expr : public Expression {
@@ -209,7 +241,74 @@ public:
       return Builder->CreateLShr(l, r, "lsrtmp");
     case Binop::Lsl:
       return Builder->CreateShl(l, r, "lsrtmp");
+    case Binop::Equal:
+      return Builder->CreateICmpEQ(l, r, "eqtmp");
+    case Binop::NotEqual:
+      return Builder->CreateICmpNE(l, r, "neqtmp");
     }
-    return nullptr;
   }
+};
+
+class If_Instr : public Instr {
+public:
+  Expression *Cond;
+  InstrList *Then;
+  InstrList *Else;
+  If_Instr(Expression *cond, InstrList *then_instr, InstrList *else_instr)
+      : Cond(cond), Then(then_instr), Else(else_instr) {}
+
+  llvm::Value *codeGen() override {
+    llvm::Value *CondV = Cond->codeGen();
+    if (!CondV)
+      return nullptr;
+
+    // Check if the condition is not boolean
+    if (!CondV->getType()->isIntegerTy(1)) {
+      // Convert condition to a bool by comparing non-equal to 0.
+      CondV = Builder->CreateICmpNE(
+          CondV, llvm::ConstantInt::get(*TheContext, llvm::APInt(32, 0)),
+          "ifcond");
+    }
+    llvm::Function *aFunction = Builder->GetInsertBlock()->getParent();
+
+    // Create blocks for the then and else cases.  Insert the 'then' block at
+    // the end of the function.
+    llvm::BasicBlock *ThenBB =
+        llvm::BasicBlock::Create(*TheContext, "then", aFunction);
+    llvm::BasicBlock *ElseBB = llvm::BasicBlock::Create(*TheContext, "else");
+    llvm::BasicBlock *MergeBB = llvm::BasicBlock::Create(*TheContext, "ifcont");
+
+    Builder->CreateCondBr(CondV, ThenBB, ElseBB);
+
+    // Emit then value.
+    Builder->SetInsertPoint(ThenBB);
+
+    llvm::Value *ThenV = Then->codeGen();
+
+    Builder->CreateBr(MergeBB);
+    // Codegen of 'Then' can change the current block, update ThenBB for the
+    // PHI.
+    ThenBB = Builder->GetInsertBlock();
+
+    // Emit else block.
+    aFunction->insert(aFunction->end(), ElseBB);
+    Builder->SetInsertPoint(ElseBB);
+
+    llvm::Value *ElseV = Else->codeGen();
+
+    Builder->CreateBr(MergeBB);
+    // Codegen of 'Else' can change the current block, update ElseBB for the
+    // PHI.
+    ElseBB = Builder->GetInsertBlock();
+
+    // Emit merge block.
+    aFunction->insert(aFunction->end(), MergeBB);
+    Builder->SetInsertPoint(MergeBB);
+    llvm::PHINode *PN =
+        Builder->CreatePHI(llvm::Type::getInt32Ty(*TheContext), 2, "iftmp");
+    PN->addIncoming(ThenV, ThenBB);
+    PN->addIncoming(ElseV, ElseBB);
+
+    return PN;
+  };
 };

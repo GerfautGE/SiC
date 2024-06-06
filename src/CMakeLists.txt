@@ -84,3 +84,5 @@ add_test(NAME funcall COMMAND sic ../test/call.si)
 add_test(NAME math_op COMMAND sic ../test/math_op.si)
 
 add_test(NAME logical_shift COMMAND sic ../test/logical_shift.si)
+
+add_test(NAME if_else COMMAND sic ../test/if.si)
