@@ -1,5 +1,5 @@
 #pragma once
-#include "ErrorCode.h"
+#include "ErrorCode.hpp"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/DataLayout.h"

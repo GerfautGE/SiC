@@ -37,7 +37,7 @@ set(SILICIUM_SOURCES
 set(SILICIUM_HEADERS
     AstNode.hpp
     FunctionDeclaration.hpp
-    ErrorCode.h
+    ErrorCode.hpp
     Globals.hpp
     CodeGen.hpp
     EmitObject.hpp

@@ -1,5 +1,5 @@
 #include "CodeGen.hpp"
-#include "ErrorCode.h"
+#include "ErrorCode.hpp"
 #include "Globals.hpp"
 #include "llvm/IR/Instructions.h"
 #include <iostream>

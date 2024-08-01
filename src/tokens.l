@@ -2,7 +2,7 @@
     #include<stdio.h>
     #include"AstNode.hpp"
     #include "parser.hpp"
-    #include "ErrorCode.h"
+    #include "ErrorCode.hpp"
     #include "Globals.hpp"
 
     extern "C" int yywrap() { return 1; }

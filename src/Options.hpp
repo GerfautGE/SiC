@@ -1,5 +1,5 @@
 #pragma once
-#include "ErrorCode.h"
+#include "ErrorCode.hpp"
 #include "llvm/Support/CodeGen.h"
 #include <cstddef>
 #include <cstdlib>

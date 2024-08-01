@@ -1,4 +1,4 @@
-#include "ErrorCode.h"
+#include "ErrorCode.hpp"
 #include "Globals.hpp"
 #include "Options.hpp"
 #include "llvm/IR/LegacyPassManager.h"
