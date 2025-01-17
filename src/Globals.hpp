@@ -16,4 +16,8 @@ extern llvm::LLVMContext *TheContext;
 extern llvm::IRBuilder<> *Builder;
 extern llvm::Module *TheModule;
 extern llvm::Function *TheFunction;
+/**
+ * Map of named values.
+ * This map keeps track of the named values in the program.
+ */
 extern std::map<std::string, llvm::AllocaInst *> *NamedValues;
