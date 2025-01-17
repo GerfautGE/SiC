@@ -10,3 +10,6 @@ Silicium Compiler (SiC) is a personal compiler project.
 - Flex
 - Bison
 - LLVM
+
+>[!TIP]
+> On MacOS you may need to `brew link llvm --force` ans `brew link bison --force`
