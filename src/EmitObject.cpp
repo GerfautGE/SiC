@@ -12,6 +12,7 @@
 #include "llvm/TargetParser/Host.h"
 #include <cstdlib>
 #include <iostream>
+#include <llvm/IR/Verifier.h>
 
 void emitObject(comp_options *opts) {
   llvm::InitializeNativeTarget();
@@ -55,6 +56,11 @@ void emitObject(comp_options *opts) {
 
   if (EC) {
     exit(1);
+  }
+
+  if (llvm::verifyModule(*TheModule, &llvm::errs())) {
+    std::cerr << "Error: Module verification failed." << std::endl;
+    return;
   }
 
   llvm::legacy::PassManager pm;
