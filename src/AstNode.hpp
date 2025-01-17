@@ -174,6 +174,24 @@ public:
   }
 };
 
+class Assign_Instr : public Instr {
+public:
+  Assign_Instr(Identifier *name, Expression *value)
+      : name(name), value(value) {};
+  Identifier *name;
+  Expression *value;
+  llvm::Value *codeGen() override {
+    llvm::AllocaInst *a = NamedValues->at(name->to_string());
+    if (!a) {
+      std::cerr << "Unknown variable name " << name->to_string() << std::endl;
+      exit(ERROR_CODE::UNKNOWN_VARIABLE_ERROR);
+    }
+    llvm::Value *v = value->codeGen();
+    Builder->CreateStore(v, a);
+    return v;
+  }
+};
+
 class Call_Instr : public Instr {
 public:
   Call_Instr(Identifier *name) : name(name) {};

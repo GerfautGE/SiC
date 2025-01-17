@@ -1,16 +1,14 @@
-fn cond()-> {
-    ret 0;
-}
-
-fn return()->{
-    ret 12;
+fn cmp() -> {
+  ret 5;
 }
 
 fn main() -> {
-    if[cond()==1]{
-        ret 10;
-    } else {
-        var tmp = return();
-    };
-    ret tmp;
+    var a = 0;
+    if[cmp() == 3]{
+        a = 1;
+    }
+    else{
+        a = 2;
+    }
+    ret a;
 }

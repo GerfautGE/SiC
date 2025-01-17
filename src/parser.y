@@ -89,8 +89,9 @@ instrs: instr {$$ = new InstrList(); $$->push_back($1);}
 
 instr:T_RET expression T_SEMICOLON {$$ = new Return_Instr($2);}
     | T_VAR identifier T_ASSIGN expression T_SEMICOLON {$$ = new Decl_Instr($2, $4);}
+    | identifier T_ASSIGN expression T_SEMICOLON {$$ = new Assign_Instr($1, $3);}
     | identifier T_LPAREN T_RPAREN T_SEMICOLON {$$ = new Call_Instr($1);}
-    | T_IF T_LBRACKET expression T_RBRACKET T_LBRACE instrs T_RBRACE T_ELSE T_LBRACE instrs T_RBRACE T_SEMICOLON {$$ = new If_Instr($3, $6, $10);}
+    | T_IF T_LBRACKET expression T_RBRACKET T_LBRACE instrs T_RBRACE T_ELSE T_LBRACE instrs T_RBRACE {$$ = new If_Instr($3, $6, $10);}
     ;
 
 expression: integer {$$ = $1;}
