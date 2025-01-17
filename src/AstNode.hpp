@@ -278,31 +278,29 @@ public:
 
   llvm::Value *codeGen() override {
     llvm::Value *CondV = Cond->codeGen();
-    if (!CondV)
+    if (!CondV) {
+      std::cout << "Error: Could not generate code for condition." << std::endl;
       return nullptr;
-
-    // Check if the condition is not boolean
-    if (!CondV->getType()->isIntegerTy(1)) {
-      // Convert condition to a bool by comparing non-equal to 0.
-      CondV = Builder->CreateICmpNE(
-          CondV, llvm::ConstantInt::get(*TheContext, llvm::APInt(32, 0)),
-          "ifcond");
     }
-    llvm::Function *aFunction = Builder->GetInsertBlock()->getParent();
+
+    using namespace llvm;
+
+    Function *TheFunction = Builder->GetInsertBlock()->getParent();
 
     // Create blocks for the then and else cases.  Insert the 'then' block at
     // the end of the function.
-    llvm::BasicBlock *ThenBB =
-        llvm::BasicBlock::Create(*TheContext, "then", aFunction);
-    llvm::BasicBlock *ElseBB = llvm::BasicBlock::Create(*TheContext, "else");
-    llvm::BasicBlock *MergeBB = llvm::BasicBlock::Create(*TheContext, "ifcont");
+    BasicBlock *ThenBB = BasicBlock::Create(*TheContext, "then", TheFunction);
+    BasicBlock *ElseBB = BasicBlock::Create(*TheContext, "else");
+    BasicBlock *MergeBB = BasicBlock::Create(*TheContext, "ifcont");
 
     Builder->CreateCondBr(CondV, ThenBB, ElseBB);
 
     // Emit then value.
     Builder->SetInsertPoint(ThenBB);
 
-    llvm::Value *ThenV = Then->codeGen();
+    Value *ThenV = Then->codeGen();
+    if (!ThenV)
+      return nullptr;
 
     Builder->CreateBr(MergeBB);
     // Codegen of 'Then' can change the current block, update ThenBB for the
@@ -310,10 +308,12 @@ public:
     ThenBB = Builder->GetInsertBlock();
 
     // Emit else block.
-    aFunction->insert(aFunction->end(), ElseBB);
+    TheFunction->insert(TheFunction->end(), ElseBB);
     Builder->SetInsertPoint(ElseBB);
 
-    llvm::Value *ElseV = Else->codeGen();
+    Value *ElseV = Else->codeGen();
+    if (!ElseV)
+      return nullptr;
 
     Builder->CreateBr(MergeBB);
     // Codegen of 'Else' can change the current block, update ElseBB for the
@@ -321,13 +321,12 @@ public:
     ElseBB = Builder->GetInsertBlock();
 
     // Emit merge block.
-    aFunction->insert(aFunction->end(), MergeBB);
+    TheFunction->insert(TheFunction->end(), MergeBB);
     Builder->SetInsertPoint(MergeBB);
-    llvm::PHINode *PN =
-        Builder->CreatePHI(llvm::Type::getInt32Ty(*TheContext), 2, "iftmp");
+    PHINode *PN = Builder->CreatePHI(Type::getInt32Ty(*TheContext), 2, "iftmp");
+
     PN->addIncoming(ThenV, ThenBB);
     PN->addIncoming(ElseV, ElseBB);
-
     return PN;
   };
 };
