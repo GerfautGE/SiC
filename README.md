@@ -26,3 +26,11 @@ make -C build
 ```bash
 ./build/sic <file>
 ```
+
+## Test
+
+Once you have built the project, you can run the tests with :
+
+```bash
+make -C build test
+```
