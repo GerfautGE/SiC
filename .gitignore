@@ -11,3 +11,4 @@ sic
 *.s
 docs/
 a.out
+.zed
