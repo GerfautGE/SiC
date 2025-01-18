@@ -32,24 +32,28 @@ void emitObject(compiler_options *opts) {
 
   llvm::TargetOptions opt;
   auto TargetMachine = Target->createTargetMachine(TargetTriple, CPU, Features,
-                                                   opt, llvm::Reloc::PIC_);
+                                                   opt, llvm::Reloc::Static);
 
   std::error_code EC;
 
   std::string outName;
+  std::string finalName;
 
   if (opts->outName) {
     outName = opts->outName;
+    finalName = outName;
   } else {
+    outName = opts->inName ? opts->inName : "out";
+    finalName = outName;
     switch (opts->fileType) {
     case llvm::CodeGenFileType::ObjectFile:
-      outName = "out.o";
+      outName += ".o";
       break;
     case llvm::CodeGenFileType::AssemblyFile:
-      outName = "out.s";
+      outName += ".s";
       break;
     default:
-      outName = "out.o";
+      outName += ".o";
       break;
     }
   }
@@ -83,8 +87,10 @@ void emitObject(compiler_options *opts) {
 
   // link the object file using ld
   // TODO: make this cross platform by using llvm's lld
+  std::string linker = "ld -o " + finalName + " " + outName;
+  std::string remove = "rm " + outName;
   if (opts->fileType == llvm::CodeGenFileType::ObjectFile &&
-      !system("ld -o a.out out.o")) {
-    system("rm out.o");
+      !system(linker.c_str()) && !opts->outName) {
+    system(remove.c_str());
   }
 }
