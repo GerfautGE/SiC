@@ -45,9 +45,6 @@ int main(int argc, char **argv) {
     exit(ERROR_CODE::FILE_ERROR);
   }
 
-  // setup code generation environment before parsing
-  setupCodeGen();
-
   // set the filename for error messages
   filename = argv[1];
   // parse the input file
