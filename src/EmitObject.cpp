@@ -14,15 +14,16 @@
 #include <iostream>
 #include <llvm/IR/Verifier.h>
 
-void emitObject(comp_options *opts) {
+void emitObject(compiler_options *opts) {
   llvm::InitializeNativeTarget();
   llvm::InitializeNativeTargetAsmPrinter();
   llvm::InitializeNativeTargetAsmParser();
 
   // target triple
+  // TODO: cmake should set this so we can cross compile
   auto TargetTriple = llvm::sys::getDefaultTargetTriple();
-  // initialize the target
 
+  // initialize the target
   std::string Error;
   auto Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
 

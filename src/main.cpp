@@ -7,9 +7,26 @@
 #include "llvm/IR/Verifier.h"
 #include "llvm/Support/CodeGen.h"
 #include <iostream>
+#include <regex>
 
 extern FILE *yyin;
 extern int yyparse();
+
+char *extractFilename(const char *filepath) {
+  // Define the regex pattern to match the filename without the extension.
+  std::regex pattern(R"(.*[\\/](.+)\.[^\.]+$)");
+  std::smatch matches;
+
+  std::string filename = filepath;
+
+  if (std::regex_match(filename, matches, pattern)) {
+    // The filename without the extension is in the first capture group.
+    return strdup(matches[1].str().c_str());
+  }
+
+  // If no match, return an empty string or handle as needed.
+  return nullptr;
+}
 
 int main(int argc, char **argv) {
   // check for input file in command line
@@ -17,7 +34,8 @@ int main(int argc, char **argv) {
     usage(argv[0]);
   }
 
-  comp_options opts;
+  compiler_options opts;
+  opts.inName = extractFilename(argv[1]);
   int index = parseOptions(argc, argv, &opts);
 
   yyin = fopen(argv[index], "r");

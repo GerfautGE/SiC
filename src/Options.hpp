@@ -9,18 +9,20 @@
 typedef struct comp_options {
   llvm::CodeGenFileType fileType = llvm::CodeGenFileType::ObjectFile;
   char *outName = NULL;
-} comp_options;
+  char *inName = NULL;
+} compiler_options;
 
 /**
  * Print usage message and exit
  * @param name name of the program
  */
 const static void usage(std::string name) {
+  std::cerr << "Silicium Compiler (SiC)" << std::endl;
   std::cerr << "Usage: " << name << " <input file>" << std::endl;
   exit(ERROR_CODE::USAGE_ERROR);
 }
 
-static int parseOptions(int argc, char *argv[], comp_options *opts) {
+static int parseOptions(int argc, char *argv[], compiler_options *opts) {
   int c;
   while ((c = getopt(argc, argv, "sco:")) != -1)
     switch (c) {
