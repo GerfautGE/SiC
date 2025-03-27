@@ -36,7 +36,7 @@
 %token <str> T_ID
 %token <ival> T_INT
 %token T_FN T_VAR T_RET T_IF T_ELSE
-%token T_LPAREN T_RPAREN T_ARROW T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_ASSIGN T_SEMICOLON
+%token T_LPAREN T_RPAREN T_ARROW T_LBRACE T_RBRACE T_LBRACKET T_RBRACKET T_ASSIGN T_SEMICOLON T_COMMA
 %token T_EQ T_NEQ
 %token T_PLUS T_MINUS T_MUL T_DIV T_MOD T_LSHIFT T_RSHIFT
 
@@ -77,10 +77,12 @@ statements: statement {$$ = new StatementList(); $$->push_back($1);}
 statement: function_declaration {$$ = $1;}
     ;
 
-function_declaration: T_FN identifier T_LPAREN T_RPAREN T_ARROW  T_LBRACE instrs T_RBRACE
-    {
-        $$ = new FunctionDeclaration($2, $7);
-    }
+args: identifier
+    | identifier T_COMMA args
+    ;
+
+function_declaration: T_FN identifier T_LPAREN T_RPAREN T_ARROW  T_LBRACE instrs T_RBRACE { $$ = new FunctionDeclaration($2, $7);}
+    | T_FN identifier T_LPAREN args T_RPAREN T_ARROW  T_LBRACE instrs T_RBRACE { $$ = new FunctionDeclaration($2, $8) ;}
     ;
 
 instrs: instr {$$ = new InstrList(); $$->push_back($1);}
@@ -109,7 +111,12 @@ expression: integer {$$ = $1;}
     | T_LPAREN expression T_RPAREN {$$ = $2;}
     ;
 
+call_args : expression
+    | expression T_COMMA call_args
+    ;
+
 call: identifier T_LPAREN T_RPAREN {$$ = new Call_Expr($1);}
+    | identifier T_LPAREN call_args T_RPAREN {$$ = new Call_Expr($1);}
     ;
 
 integer: T_INT {$$ = new Integer($1);}

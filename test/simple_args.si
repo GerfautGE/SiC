@@ -1,0 +1,7 @@
+fn double(x) -> {
+    ret x * 2;
+}
+
+fn main() -> {
+    ret double(4);
+}

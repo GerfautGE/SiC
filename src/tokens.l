@@ -43,6 +43,7 @@
 "]" { return T_RBRACKET; }
 "=" { return T_ASSIGN; }
 ";" { return T_SEMICOLON; }
+"," { return T_COMMA;}
 "+" { return T_PLUS; }
 "-" { return T_MINUS; }
 "*" { return T_MUL; }

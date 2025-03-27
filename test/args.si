@@ -1,0 +1,13 @@
+fn double(x) -> {
+    ret x * 2;
+}
+
+fn times(x, y) -> {
+    ret x * y;
+}
+
+fn main() -> {
+    var i = double(2);
+    var retval = times(i, 3);
+    ret retval;
+}

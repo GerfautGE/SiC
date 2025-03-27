@@ -1,0 +1,7 @@
+fn next_step() -> {
+}
+
+fn main() -> {
+    var limit = 20;
+    var pattern = 1;
+}
